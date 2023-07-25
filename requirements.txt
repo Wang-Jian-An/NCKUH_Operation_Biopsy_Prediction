@@ -7,3 +7,5 @@ pandas==2.0.3
 scikit_learn==1.3.0
 gunicorn
 dash-tools
+"dash[diskcache]"
+"dash[celery]"
