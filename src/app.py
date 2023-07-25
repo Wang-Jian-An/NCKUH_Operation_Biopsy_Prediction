@@ -95,7 +95,9 @@ def read_file(contents, filename):
 def click_submit_text(submit_n_click):
     global predData
     if submit_n_click == 1:
-        predData = pd.read_excel("predData.xlsx")
+        if predData is None:
+            predData = pd.read_excel("predData.xlsx")
+        print("開始預測")
         predResult = model_prediction.main_func(predData = predData)
         print(predResult)
         return [
@@ -113,7 +115,9 @@ def click_submit_text(submit_n_click):
     prevent_initial_call = True
 )
 def click_submit_text(reset_n_click):
+    global predData
     if reset_n_click == 1:
+        predData = None
         return [], [], 0
 
 if __name__ == "__main__":
