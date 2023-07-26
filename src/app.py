@@ -254,7 +254,7 @@ def click_submit_text(submit_n_click):
             #         dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
             #     ])
             # ], 0
-            return [html.Br(), html.Center("")], [
+            return [html.Br(), html.Center("預測成功。")], [
                 html.Br(), 
                 html.Div([
                     "{}".format(predResult.to_dict("list"))
@@ -278,6 +278,7 @@ def click_submit_text(submit_n_click):
     Output("upload-data", "contents"), 
     Input("reset_button", "n_clicks"), 
     prevent_initial_call = True,
+    background = True, 
     running = [
         (Output("contents", "children"), "", "")
     ]
