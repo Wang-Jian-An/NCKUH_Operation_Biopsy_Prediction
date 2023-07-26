@@ -96,16 +96,19 @@ def read_file(contents, filename):
 )
 def click_submit_text(submit_n_click):
     if submit_n_click == 1:
-        print("開始預測")
-        print(data.predData)
-        predResult = model_prediction.main_func(predData = data.predData)
-        print(predResult)
-        return [
-            html.Br(), 
-            html.Div([
-                dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
-            ])
-        ], 0
+        try:
+            predResult = model_prediction.main_func(predData = data.predData)
+            return [
+                html.Br(), 
+                html.Div([
+                    dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
+                ])
+            ], 0
+        except:
+            return [
+                html.Br(),
+                html.Div("預測失敗")
+            ]
 
 @callback(
     Output("contents", "children", allow_duplicate = True),
