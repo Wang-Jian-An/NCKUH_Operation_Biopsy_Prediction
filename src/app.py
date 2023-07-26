@@ -50,6 +50,7 @@ app.layout = html.Div([
 # 讀取檔案
 @callback(
     Output('contents', 'children', allow_duplicate = True),
+    Output("rawData", "children", allow_duplicate = True), 
     Input("upload-data", "contents"),
     State("upload-data", "filename"), 
     prevent_initial_call = 'initial_duplicate',
@@ -76,7 +77,12 @@ def read_file(contents, filename):
             # Assume that the user uploaded an excel file
             predData = pd.read_excel(io.BytesIO(decoded))
             predData.to_excel("predData.xlsx", index = None)
-        return [html.Br(), html.Center(["資料上傳完成"])]
+        return ([html.Br(), html.Center(["資料上傳完成"])], [
+            html.Br(),
+            html.Div([
+                dash_table.DataTable(predData.to_dict("records"), [{"name": i, "id": i} for i in predData.columns])
+            ])
+        ])
 
 # 點選 Submit、Rest，分別顯示預測結果表格、空白
 @callback(
