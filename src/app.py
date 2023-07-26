@@ -6,20 +6,20 @@ import model_prediction
 import data
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-# if 'REDIS_URL' in os.environ:
-#     # Use Redis & Celery if REDIS_URL set as an env variable
-#     from celery import Celery
-#     celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
-#     background_callback_manager = CeleryManager(celery_app)
+if 'REDIS_URL' in os.environ:
+    # Use Redis & Celery if REDIS_URL set as an env variable
+    from celery import Celery
+    celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
+    background_callback_manager = CeleryManager(celery_app)
 
-# else:
-#     # Diskcache for non-production apps when developing locally
-#     import diskcache
-#     cache = diskcache.Cache("./cache")
-#     background_callback_manager = DiskcacheManager(cache)
-# , background_callback_manager=background_callback_manager
+else:
+    # Diskcache for non-production apps when developing locally
+    import diskcache
+    cache = diskcache.Cache("./cache")
+    background_callback_manager = DiskcacheManager(cache)
 
-app = Dash(__name__, external_stylesheets = external_stylesheets)
+
+app = Dash(__name__, external_stylesheets = external_stylesheets, background_callback_manager=background_callback_manager)
 server = app.server
 app.layout = html.Div([
     html.Center(html.H1("The prediction for operation or biopsy")), 
@@ -54,7 +54,7 @@ app.layout = html.Div([
     Input("upload-data", "contents"),
     State("upload-data", "filename"), 
     prevent_initial_call = 'initial_duplicate',
-    # background = True, 
+    background = True, 
     running = [
         (
             Output("contents", "children", allow_duplicate = True), 
@@ -86,7 +86,7 @@ def read_file(contents, filename):
     Output("submit_button", "n_clicks"),
     Input("submit_button", "n_clicks"), 
     prevent_initial_call = True,
-    # background = True, 
+    background = True, 
     running = [
         (
             Output("contents", "children", allow_duplicate = True), 
