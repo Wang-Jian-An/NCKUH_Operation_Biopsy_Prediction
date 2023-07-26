@@ -120,7 +120,7 @@ def main_func(predData):
     classical_features = [i for i in classical_features if i in predData.columns]
 
     # 讀取特徵工程物件、遺失值物件，以及模型檔案
-    with gzip.GzipFile("final_model/Lasso-0_None-None-None-CatBoost.gzip", "rb") as f:
+    with gzip.GzipFile(os.path.join("final_model", "Lasso-0_None-None-None-CatBoost.gzip"), "rb") as f:
         model = pickle.load(f)
     model_inputFeatures = model.feature_names_
 
