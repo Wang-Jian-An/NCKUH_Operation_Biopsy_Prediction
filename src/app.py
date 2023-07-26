@@ -109,7 +109,7 @@ def click_submit_text(submit_n_click):
         except:
             return [
                 html.Br(),
-                html.Center("預測失敗")
+                html.Center("預測失敗，{}".format(os.getcwd()))
             ], [
                 html.Br(), 
                 html.Div([
