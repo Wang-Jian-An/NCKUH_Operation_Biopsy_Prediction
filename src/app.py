@@ -3,7 +3,6 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 from dash import Dash, html, Input, Output, State, dcc, callback, CeleryManager, DiskcacheManager, dash_table
 import model_prediction
-import data
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 if 'REDIS_URL' in os.environ:
