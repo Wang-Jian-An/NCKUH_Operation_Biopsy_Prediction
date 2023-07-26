@@ -67,22 +67,25 @@ app.layout = html.Div([
 def read_file(contents, filename):
     global predData
     if contents is not None:
-        content_type, content_string = contents.split(',')
-        decoded = base64.b64decode(content_string)
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file
-            predData = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in filename or "xlsx" in filename:
-            # Assume that the user uploaded an excel file
-            predData = pd.read_excel(io.BytesIO(decoded))
-            predData.to_excel("predData.xlsx", index = None)
-        return ([html.Br(), html.Center(["資料上傳完成"])], [
-            html.Br(),
-            html.Div([
-                dash_table.DataTable(predData.to_dict("records"), [{"name": i, "id": i} for i in predData.columns])
-            ])
-        ])
+        try:
+            content_type, content_string = contents.split(',')
+            decoded = base64.b64decode(content_string)
+            if 'csv' in filename:
+                # Assume that the user uploaded a CSV file
+                predData = pd.read_csv(
+                    io.StringIO(decoded.decode('utf-8')))
+            elif 'xls' in filename or "xlsx" in filename:
+                # Assume that the user uploaded an excel file
+                predData = pd.read_excel(io.BytesIO(decoded))
+                predData.to_excel("predData.xlsx", index = None)
+            return [html.Br(), html.Center(["資料上傳完成"])], [
+                html.Br(),
+                html.Div([
+                    dash_table.DataTable(predData.to_dict("records"), [{"name": i, "id": i} for i in predData.columns])
+                ])
+            ]
+        except:
+            return [html.Br(), html.Center(["資料上傳失敗"])], []
 
 # 點選 Submit、Rest，分別顯示預測結果表格、空白
 @callback(
