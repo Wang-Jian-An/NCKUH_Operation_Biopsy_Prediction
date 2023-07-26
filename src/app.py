@@ -68,6 +68,7 @@ def read_file(contents, filename):
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
         try:
+            predData = pd.read_excel(io.BytesIO(decoded))
             # if 'csv' in filename:
             #     # Assume that the user uploaded a CSV file
             #     data.predData = pd.read_csv(
@@ -76,7 +77,7 @@ def read_file(contents, filename):
             #     # Assume that the user uploaded an excel file
             #     data.predData = pd.read_excel(io.BytesIO(decoded))
                 # predData.to_excel("predData.xlsx", index = None)
-            return [html.Br(), html.Center(["{}".format(decoded)])]
+            return [html.Br(), html.Center(["{}".format(predData.to_dict("list"))])]
         except:
             return [html.Br(), html.Center(["資料上傳失敗"])]
 
