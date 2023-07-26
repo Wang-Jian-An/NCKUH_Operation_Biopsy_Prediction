@@ -70,11 +70,12 @@ def read_file(contents, filename):
         try:
             if 'csv' in filename:
                 # Assume that the user uploaded a CSV file
-                data.predData = pd.read_csv(
+                predData = pd.read_csv(
                     io.StringIO(decoded.decode('utf-8')))
             elif 'xls' in filename or "xlsx" in filename:
                 # Assume that the user uploaded an excel file
-                data.predData = pd.read_excel(io.BytesIO(decoded))
+                predData = pd.read_excel(io.BytesIO(decoded))
+            predData.to_excel("predData.xlsx", index = None)
             return [html.Br(), html.Center(["資料上傳成功"])]
         except:
             return [html.Br(), html.Center(["資料上傳失敗"])]
@@ -97,7 +98,8 @@ def read_file(contents, filename):
 def click_submit_text(submit_n_click):
     if submit_n_click == 1:
         try:
-            predResult = model_prediction.main_func(predData = data.predData)
+            predData = pd.read_excel("predData.xlsx")
+            predResult = model_prediction.main_func(predData = predData)
             return [
                 html.Br(), 
                 html.Div([
