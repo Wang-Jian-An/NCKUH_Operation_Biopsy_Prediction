@@ -65,9 +65,9 @@ app.layout = html.Div([
 )
 def read_file(contents, filename):
     if contents is not None:
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
         try:
-            content_type, content_string = contents.split(',')
-            decoded = base64.b64decode(content_string)
             if 'csv' in filename:
                 # Assume that the user uploaded a CSV file
                 data.predData = pd.read_csv(
