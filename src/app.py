@@ -61,7 +61,7 @@ def KNN_Imputation_and_generate_column(data: pd.DataFrame,
             )
         ], axis = 1)
 
-        with gzip.GzipFile(os.path.join("..", "FE_obj", "KNNImputation_for_Continuous_{}.gzip".format(load_Imputation_Information)), "rb") as f:
+        with gzip.GzipFile(os.path.join("FE_obj", "KNNImputation_for_Continuous_{}.gzip".format(load_Imputation_Information)), "rb") as f:
             KNNImputation = pickle.load(f)
         knn_features = KNNImputation.feature_names_in_
         print(knn_features.__len__())
@@ -89,8 +89,8 @@ def KNN_Imputation_and_generate_column(data: pd.DataFrame,
                 )
             ], axis = 1)
 
-            if os.path.exists(os.path.join("..", "FE_obj", "SimpleImputation_for_Categorical_{}.gzip".format(load_Imputation_Information))):
-                with gzip.GzipFile(os.path.join("..", "FE_obj", "SimpleImputation_for_Categorical_{}.gzip".format(load_Imputation_Information)), "rb") as f:
+            if os.path.exists(os.path.join("FE_obj", "SimpleImputation_for_Categorical_{}.gzip".format(load_Imputation_Information))):
+                with gzip.GzipFile(os.path.join("FE_obj", "SimpleImputation_for_Categorical_{}.gzip".format(load_Imputation_Information)), "rb") as f:
                     SimpleImputation = pickle.load(f)
                 simpleimpution_features = SimpleImputation.feature_names_in_
                 classical_features_data = pd.DataFrame(
@@ -123,7 +123,7 @@ def main_func(predData):
     classical_features = [i for i in classical_features if i in predData.columns]
 
     # 讀取特徵工程物件、遺失值物件，以及模型檔案
-    with gzip.GzipFile(os.path.join("..", "final_model", "Lasso-0_None-None-None-CatBoost.gzip"), "rb") as f:
+    with gzip.GzipFile(os.path.join("final_model", "Lasso-0_None-None-None-CatBoost.gzip"), "rb") as f:
         model = pickle.load(f)
     model_inputFeatures = model.feature_names_
 
@@ -248,10 +248,16 @@ def click_submit_text(submit_n_click):
         try:
             predData = pd.read_excel("predData.xlsx")
             predResult = main_func(predData = predData)
+            # return [html.Br(), html.Center("")], [
+            #     html.Br(), 
+            #     html.Div([
+            #         dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
+            #     ])
+            # ], 0
             return [html.Br(), html.Center("")], [
                 html.Br(), 
                 html.Div([
-                    dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
+                    "{}".format(predResult.to_dict("list"))
                 ])
             ], 0
         except:
