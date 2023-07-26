@@ -82,6 +82,7 @@ def read_file(contents, filename):
 
 # 點選 Submit、Rest，分別顯示預測結果表格、空白
 @callback(
+    Output("contents", "children", allow_duplicate = True), 
     Output("prediction_result", "children", allow_duplicate = True), 
     Output("submit_button", "n_clicks"),
     Input("submit_button", "n_clicks"), 
@@ -91,7 +92,7 @@ def read_file(contents, filename):
         (
             Output("contents", "children", allow_duplicate = True), 
             [html.Br(), html.Center("資料預測中，請稍後")], 
-            [html.Br(), html.Center("資料預測完成，以下為預測結果")]
+            [html.Br(), html.Center("")]
         )
     ]
 )
@@ -100,7 +101,7 @@ def click_submit_text(submit_n_click):
         try:
             predData = pd.read_excel("predData.xlsx")
             predResult = model_prediction.main_func(predData = predData)
-            return [
+            return [html.Br(), html.Center("")], [
                 html.Br(), 
                 html.Div([
                     dash_table.DataTable(predResult.to_dict("records"), [{"name": i, "id": i} for i in predResult.columns])
@@ -110,7 +111,12 @@ def click_submit_text(submit_n_click):
             return [
                 html.Br(),
                 html.Div("預測失敗")
-            ]
+            ], [
+                html.Br(), 
+                html.Div([
+                    dash_table.DataTable(predData.to_dict("records"), [{"name": i, "id": i} for i in predData.columns])
+                ])
+            ], 0
 
 @callback(
     Output("contents", "children", allow_duplicate = True),
