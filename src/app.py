@@ -42,8 +42,9 @@ app.layout = html.Div([
         html.Button(children = "預測", id = "submit_button", n_clicks = 0, style = {"width": "50%"}), # 開始預測按鈕
         html.Button(children = "重置", id = "reset_button", n_clicks = 0,  style = {"width": "50%"}), # 重置按鈕
     ]), 
-    html.Div(id = "contents"),
-    html.Div(id = "prediction_result")
+    html.Div(id = "contents", children = [""]),
+    html.Div(id = "prediction_result"),
+    html.Div(id = "rawData")
 ])
 
 # 讀取檔案
@@ -55,9 +56,9 @@ app.layout = html.Div([
     background = True, 
     running = [
         (
-            Output("contents", "children"), 
+            Output("contents", "children", allow_duplicate = True), 
             [html.Br(), html.Center(["資料上傳中，請稍後"])], 
-            [html.Br(), html.Center(["資料上傳完成"])]
+            [html.Br(), html.Center([""])]
         ),
         (Output("submit_button", "disable"), True, False)
     ]
@@ -111,14 +112,18 @@ def click_submit_text(submit_n_click):
     Output("contents", "children", allow_duplicate = True),
     Output("prediction_result", "children", allow_duplicate = True), 
     Output("reset_button", "n_clicks"),  
+    Output("upload-data", "contents"), 
     Input("reset_button", "n_clicks"), 
-    prevent_initial_call = True
+    prevent_initial_call = True,
+    running = [
+        (Output("contents", "children"), "", "")
+    ]
 )
 def click_submit_text(reset_n_click):
     global predData
     if reset_n_click == 1:
         predData = None
-        return [], [], 0
+        return [], [], 0, None
 
 if __name__ == "__main__":
     app.run_server(debug=True)
