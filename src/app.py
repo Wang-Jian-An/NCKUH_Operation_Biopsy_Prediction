@@ -3,22 +3,23 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 from dash import Dash, html, Input, Output, State, dcc, callback, CeleryManager, DiskcacheManager, dash_table
 import model_prediction
+import data
 
-predData = None
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-if 'REDIS_URL' in os.environ:
-    # Use Redis & Celery if REDIS_URL set as an env variable
-    from celery import Celery
-    celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
-    background_callback_manager = CeleryManager(celery_app)
+# if 'REDIS_URL' in os.environ:
+#     # Use Redis & Celery if REDIS_URL set as an env variable
+#     from celery import Celery
+#     celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
+#     background_callback_manager = CeleryManager(celery_app)
 
-else:
-    # Diskcache for non-production apps when developing locally
-    import diskcache
-    cache = diskcache.Cache("./cache")
-    background_callback_manager = DiskcacheManager(cache)
+# else:
+#     # Diskcache for non-production apps when developing locally
+#     import diskcache
+#     cache = diskcache.Cache("./cache")
+#     background_callback_manager = DiskcacheManager(cache)
+# , background_callback_manager=background_callback_manager
 
-app = Dash(__name__, external_stylesheets = external_stylesheets, background_callback_manager=background_callback_manager)
+app = Dash(__name__, external_stylesheets = external_stylesheets)
 server = app.server
 app.layout = html.Div([
     html.Center(html.H1("The prediction for operation or biopsy")), 
@@ -50,42 +51,34 @@ app.layout = html.Div([
 # 讀取檔案
 @callback(
     Output('contents', 'children', allow_duplicate = True),
-    Output("rawData", "children", allow_duplicate = True), 
     Input("upload-data", "contents"),
     State("upload-data", "filename"), 
     prevent_initial_call = 'initial_duplicate',
-    background = True, 
+    # background = True, 
     running = [
         (
             Output("contents", "children", allow_duplicate = True), 
             [html.Br(), html.Center(["資料上傳中，請稍後"])], 
             [html.Br(), html.Center([""])]
-        ),
-        (Output("submit_button", "disable"), True, False)
+        )
     ]
 )
 def read_file(contents, filename):
-    global predData
     if contents is not None:
         try:
             content_type, content_string = contents.split(',')
             decoded = base64.b64decode(content_string)
             if 'csv' in filename:
                 # Assume that the user uploaded a CSV file
-                predData = pd.read_csv(
+                data.predData = pd.read_csv(
                     io.StringIO(decoded.decode('utf-8')))
             elif 'xls' in filename or "xlsx" in filename:
                 # Assume that the user uploaded an excel file
-                predData = pd.read_excel(io.BytesIO(decoded))
-                predData.to_excel("predData.xlsx", index = None)
-            return [html.Br(), html.Center(["資料上傳完成"])], [
-                html.Br(),
-                html.Div([
-                    dash_table.DataTable(predData.to_dict("records"), [{"name": i, "id": i} for i in predData.columns])
-                ])
-            ]
+                data.predData = pd.read_excel(io.BytesIO(decoded))
+                # predData.to_excel("predData.xlsx", index = None)
+            return [html.Br(), html.Center(["資料上傳完成"])]
         except:
-            return [html.Br(), html.Center(["資料上傳失敗"])], []
+            return [html.Br(), html.Center(["資料上傳失敗"])]
 
 # 點選 Submit、Rest，分別顯示預測結果表格、空白
 @callback(
@@ -93,7 +86,7 @@ def read_file(contents, filename):
     Output("submit_button", "n_clicks"),
     Input("submit_button", "n_clicks"), 
     prevent_initial_call = True,
-    background = True, 
+    # background = True, 
     running = [
         (
             Output("contents", "children", allow_duplicate = True), 
@@ -103,12 +96,10 @@ def read_file(contents, filename):
     ]
 )
 def click_submit_text(submit_n_click):
-    global predData
     if submit_n_click == 1:
-        if predData is None:
-            predData = pd.read_excel("predData.xlsx")
         print("開始預測")
-        predResult = model_prediction.main_func(predData = predData)
+        print(data.predData)
+        predResult = model_prediction.main_func(predData = data.predData)
         print(predResult)
         return [
             html.Br(), 
