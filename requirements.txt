@@ -8,3 +8,4 @@ dash-tools
 dash[diskcache] 
 dash[celery]
 openpyxl
+catboost
